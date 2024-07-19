@@ -3,11 +3,18 @@ const express = require("express")
 const app = express()
 const mongoose = require("mongoose")
 
+const userRoute = require("./routers/userRouter")
+
 const PORT = process.env.PORT || 3500
 
 app.get("/", (request, response) => {
     response.send({message: "Server Running"})
 })
+
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+app.use("/api/v1/user", userRoute)
 
 mongoose.connect(process.env.DB_URL)
 const db = mongoose.connection

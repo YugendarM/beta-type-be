@@ -47,7 +47,7 @@ const loginUser = async(request, response) => {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: true,
-                maxAge: 2 * 60 * 60 * 1000 
+                maxAge: 2 * 60 * 60 * 1000,
             }
             response.cookie("SessionID", AUTH_TOKEN, options)
             return response.status(200).send({message: "Login successfull"})
@@ -61,8 +61,36 @@ const loginUser = async(request, response) => {
     }
 }
 
-const logout  = async(request, response) => {
-    
-}
+const logout = async (request, response) => {
+    const authHeader = request.headers['cookie'];
+    if (!authHeader) {
+        return response.status(204).send(); // No content to clear
+    }
+
+    const cookies = authHeader.split(';').reduce((acc, cookie) => {
+        const [name, value] = cookie.trim().split('=')
+        acc[name] = value
+        return acc
+    }, {})
+
+    const sessionID = cookies['SessionID']
+
+    if (!sessionID) {
+        return response.status(204).send()
+    }
+
+    // Clear the "SessionID" cookie
+    response.clearCookie('SessionID', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: true,
+        path: '/'
+    })
+
+    // Optionally clear site data
+    response.setHeader('Clear-Site-Data', '"cookies"')
+    return response.status(200).send({ status: "success", code: 200, message: "Logged out!" })
+};
+
 
 module.exports = {signupUser, loginUser, logout}

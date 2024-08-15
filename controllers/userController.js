@@ -12,15 +12,13 @@ const getUserDetails = async(request, response) => {
 
 const updateScore = async(request, response) => {
     const userData = request.user
-    const scoreData = request.body
 
+    const scoreData = request.body
     const dataToBeUpdated = {
         betaScore : userData.betaScore + scoreData.betaScore
     }
     if(scoreData.speed > userData.topSpeed){
         dataToBeUpdated.topSpeed = scoreData.speed
-    }
-    if(scoreData.speed > userData.topSpeed && scoreData.accuracy > userData.topAccuracy){
         dataToBeUpdated.topAccuracy = scoreData.accuracy
     }
     try{
@@ -36,4 +34,52 @@ const updateScore = async(request, response) => {
     }
 }
 
-module.exports = {getUserDetails, updateScore}
+const getUsersBasedOnTopSpeed = async(request, response) => {
+    try{
+        const topUsers = await UserModel.aggregate([
+            {
+                $match : {topSpeed : {$gt : 0}}
+            },
+            {
+                $sort: { topSpeed: -1},
+            },
+            {
+                $limit: 20
+            },
+            {
+                $project: {password: 0, _id: 0}
+            }
+        ])
+
+        return response.status(200).send(topUsers)
+    }
+    catch(error){
+        return response.status(500).send({message: error.message})
+    }
+}
+
+const getUsersBasedOnTopBetaScore = async(request, response) => {
+    try{
+        const topUsers = await UserModel.aggregate([
+            {
+                $match : {betaScore : {$gt : 0}}
+            },
+            {
+                $sort: { betaScore: -1},
+            },
+            {
+                $limit: 20
+            },
+            {
+                $project: {password: 0, _id: 0}
+            }
+        ])
+
+        return response.status(200).send(topUsers)
+    }
+    catch(error){
+        return response.status(500).send({message: error.message})
+    }
+}
+
+module.exports = {getUserDetails, updateScore, getUsersBasedOnTopBetaScore, getUsersBasedOnTopSpeed}

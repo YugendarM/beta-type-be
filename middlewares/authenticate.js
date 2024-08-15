@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken")
 
 const authenticate = async(request, response, next) => {
     try{
-        console.log(request.params)
         const authHeader = request.headers['cookie']
         if(!authHeader){
             return response.status(401).send({status: "failure", code: 501, message: "Token not found"})

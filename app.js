@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser')
 
 const userRoute = require("./routers/userRouter")
 const authRoute = require("./routers/authRouter")
+const lessonRoute = require("./routers/lessonRouter")
 
 const PORT = process.env.PORT || 3500
 
@@ -25,6 +26,7 @@ app.use(cors({
 
 app.use("/api/v1/auth", authRoute)
 app.use("/api/v1/user", userRoute)
+app.use("/api/v1/lesson", lessonRoute)
 
 mongoose.connect(process.env.DB_URL)
 const db = mongoose.connection

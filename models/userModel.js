@@ -27,7 +27,26 @@ const userSchema = new mongoose.Schema({
     betaScore: {
         type: Number,
         default: 0
-    }
+    },
+    testResults: [{
+        speed: {
+            type:Number
+        },
+        accuracy: {
+            type: Number
+        },
+        dateTime: {
+            type: Date
+        }
+    }],
+    educationOverview: [{
+        lesson: {
+            type: Number
+        },
+        accuracy: {
+            type: Number
+        }
+    }]
 
 },
 {

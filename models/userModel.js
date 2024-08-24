@@ -46,8 +46,11 @@ const userSchema = new mongoose.Schema({
         accuracy: {
             type: Number
         }
-    }]
-
+    }],
+    lessonsCompleted: {
+        type: Number,
+        default: 0
+    }
 },
 {
     collection: "user",

@@ -82,4 +82,55 @@ const getUsersBasedOnTopBetaScore = async(request, response) => {
     }
 }
 
-module.exports = {getUserDetails, updateScore, getUsersBasedOnTopBetaScore, getUsersBasedOnTopSpeed}
+const updateEducationResults = async (request, response) => {
+    const { lesson, accuracy } = request.body;
+    const userData = request.user;
+
+    try {
+        const user = await UserModel.findOne({ _id: userData._id });
+
+        let updatedData;
+
+        const lessonIndex = user.educationOverview.findIndex(item => item.lesson === lesson);
+
+        if (lessonIndex !== -1) {
+            updatedData = await UserModel.findOneAndUpdate(
+                {
+                    _id: userData._id,
+                    "educationOverview.lesson": lesson
+                },
+                {
+                    $set: { "educationOverview.$.accuracy": accuracy }
+                },
+                { new: true }
+            );
+        } else {
+            updatedData = await UserModel.findOneAndUpdate(
+                { _id: userData._id },
+                {
+                    $push: {
+                        educationOverview: { lesson, accuracy }
+                    }
+                },
+                { new: true }
+            );
+        }
+
+        if (lesson > user.lessonsCompleted) {
+            updatedData = await UserModel.findOneAndUpdate(
+                { _id: userData._id },
+                { $set: { lessonsCompleted: lesson } },
+                { new: true }
+            );
+        }
+
+        return response.status(200).send(updatedData);
+    } catch (error) {
+        return response.status(500).send({ message: error.message });
+    }
+};
+
+
+
+
+module.exports = {getUserDetails, updateScore, getUsersBasedOnTopBetaScore, getUsersBasedOnTopSpeed, updateEducationResults}

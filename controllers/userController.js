@@ -116,7 +116,7 @@ const updateEducationResults = async (request, response) => {
             );
         }
 
-        if (lesson > user.lessonsCompleted) {
+        if (Number(lesson) > user.lessonsCompleted) {
             updatedData = await UserModel.findOneAndUpdate(
                 { _id: userData._id },
                 { $set: { lessonsCompleted: lesson } },

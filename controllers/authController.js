@@ -21,10 +21,10 @@ const signupUser = async(request, response) => {
             const addedUser = await newUser.save()
             const AUTH_TOKEN = jwt.sign({id: addedUser._id}, JWT_TOKEN)
             const options = {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: "None",
-                maxAge: 2 * 60 * 60 * 1000 
+                httpOnly: false,
+                secure: true,
+                sameSite: 'None',
+                maxAge: 8 * 60 * 60 * 1000
             }
             response.cookie("SessionID", AUTH_TOKEN, options)
             return response.status(201).send({message: "User registered successfully"})
@@ -44,10 +44,10 @@ const loginUser = async(request, response) => {
         if(await bcrypt.compare(userCredentials.password, validUser.password)){
             const AUTH_TOKEN = jwt.sign({id: validUser._id}, JWT_TOKEN)
             const options = {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: "None",
-                maxAge: 2 * 60 * 60 * 1000,
+                httpOnly: false,
+                secure: true,
+                sameSite: 'None',
+                maxAge: 8 * 60 * 60 * 1000
             }
             response.cookie("SessionID", AUTH_TOKEN, options)
             return response.status(200).send({message: "Login successfull"})
